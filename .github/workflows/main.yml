@@ -15,7 +15,6 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     name: Build & Push Docker
-    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,6 +31,17 @@ jobs:
           cmake_version=$(grep -oP 'project\(.* VERSION \K[0-9]+\.[0-9]+\.[0-9]+' CMakeLists.txt)
           echo "::set-output name=version::${cmake_version}"
         
+      - name: Check if the version tag exist git then skip
+        id: check_tag
+        run: |
+          git tag -l | grep -q "${{ steps.cmake_version.outputs.version }}" && echo "Tag already exists" && exit 1 || echo "Tag does not exist"
+        continue-on-error: true
+      
+      - name: tag the version
+        if: steps.check_tag.outcome == 'success'
+        run: |
+          git tag -a "${{ steps.cmake_version.outputs.version }}" -m "Version ${{ steps.cmake_version.outputs.version }}"
+          git push origin "${{ steps.cmake_version.outputs.version }}"
       
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -45,7 +55,7 @@ jobs:
           context: .
           file: ./utils/docker/Dockerfile
           push: true
-          tags: "${{ env.BASE_IMAGE }}:latest,${{ env.BASE_IMAGE }}:ubuntu-24-${{ github.ref_name }}-${{ steps.cmake_version.outputs.version }}"
+          tags: "${{ env.BASE_IMAGE }}:latest,${{ env.BASE_IMAGE }}:ubuntu-24-${{ steps.cmake_version.outputs.version }}"
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
@@ -66,6 +76,12 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/artifact
 
+      - name: Find CMakeLists.txt version
+        id: cmake_version
+        run: |
+          cmake_version=$(grep -oP 'project\(.* VERSION \K[0-9]+\.[0-9]+\.[0-9]+' CMakeLists.txt)
+          echo "::set-output name=version::${cmake_version}"
+
       # ------------------------------------------- Ubuntu 20.04 AppImage
       - name: Prepare builder image for 20.04
         run: |
@@ -75,7 +91,7 @@ jobs:
         run: |
           docker run --privileged --name builder-2004 \
             builder-image:2004 /rcssserver/utils/appimage/build_appimage.sh
-          docker cp builder-2004:/rcssserver-x86_64.AppImage ${{ github.workspace }}/artifact/rcssserver-x86_64-2004.AppImage
+          docker cp builder-2004:/rcssserver-x86_64.AppImage ${{ github.workspace }}/artifact/rcssserver-x86_64-${{ steps.cmake_version.outputs.version }}.AppImage
 
       # ------------------------------------------- Artifact
       - name: Upload Artifact
@@ -90,6 +106,7 @@ jobs:
         run: |
           curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} -u ${{ secrets.GITHUB_TOKEN }}:
           echo "::set-output name=release_exists::${{ steps.check_release.outputs.stdout }}"
+          
       # ------------------------------------------- Release
       - name: Create Release
         id: create_release
