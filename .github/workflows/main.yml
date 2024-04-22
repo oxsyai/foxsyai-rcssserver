@@ -40,6 +40,8 @@ jobs:
       - name: tag the version
         if: steps.check_tag.outcome == 'success'
         run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
           git tag -a "${{ steps.cmake_version.outputs.version }}" -m "Version ${{ steps.cmake_version.outputs.version }}"
           git push origin "${{ steps.cmake_version.outputs.version }}"
       
@@ -106,7 +108,7 @@ jobs:
         run: |
           curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} -u ${{ secrets.GITHUB_TOKEN }}:
           echo "::set-output name=release_exists::${{ steps.check_release.outputs.stdout }}"
-          
+
       # ------------------------------------------- Release
       - name: Create Release
         id: create_release
