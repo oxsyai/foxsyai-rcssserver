@@ -9,7 +9,35 @@ The RoboCup Soccer Simulator Server (rcssserver) is a research and educational t
 
 For further reading, please check [the user's manual](https://rcsoccersim.readthedocs.io/).
 
-## :soccer: Quick Start
+There are three different solutions to run the RoboCup Soccer Simulator Server.
+- Download the AppImage release and run (Linux, Windows WSL)
+- Build from source and run (Linux, Windows WSL)
+- Use Docker Image
+
+## :gift_heart: AppImage
+#### Download AppImage
+Download "rcssserver-x86_64-?.?.?.AppImage" from the (release page)[https://github.com/CLSFramework/rcssserver/releases] / latest version
+or use the below command to download the latest version of AppImage:
+```bash
+wget $(curl -s https://api.github.com/repos/clsframework/rcssserver/releases/latest | grep -oP '"browser_download_url": "\K(.*rcssserver-x86_64-.*\.AppImage)' | head -n 1)
+```
+
+#### Install dependency and update permission
+
+then you need to update the permission of the AppImage and install fuse:
+```bash
+chmod +x rcssserver-x86_64-*.AppImage
+sudo apt-get install fuse
+```
+
+#### Run
+
+to run the AppImage:
+```bash
+./rcssserver-x86_64-?.?.?.AppImage
+```
+
+## :soccer: Build From Source
 
 rcssserver is implemented by C++14 and depends some libraries.
 Make sure you have the required dependencies installed on your system:
