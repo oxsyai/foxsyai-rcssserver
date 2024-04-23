@@ -1,11 +1,13 @@
 name: ci
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - "master"
     tags:
       - "*"
+    
 
 env:
   BASE_IMAGE: crosslanguagesoccerframework/rcssserver
