@@ -122,8 +122,8 @@ jobs:
         with:
           artifacts: "${{ github.workspace }}/artifact/*"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: "${{ github.ref_name }}"
-          release_name: "${{ github.ref_name }}"
+          tag: "${{ steps.cmake_version.outputs.version }}"
+          release_name: "${{ steps.cmake_version.outputs.version }}"
           release_body: "RoboCup Soccer Simulator Server"
           draft: false
           prerelease: false
