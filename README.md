@@ -26,8 +26,9 @@ wget $(curl -s https://api.github.com/repos/clsframework/rcssserver/releases/lat
 
 then you need to update the permission of the AppImage and install fuse:
 ```bash
-chmod +x rcssserver-x86_64-*.AppImage
+sudo apt update
 sudo apt-get install fuse
+chmod +x rcssserver-x86_64-*.AppImage
 ```
 
 #### Run
