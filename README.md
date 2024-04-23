@@ -1,4 +1,4 @@
-# RoboCup Soccer Simulator Server
+# :soccer: RoboCup Soccer Simulator Server
 
 [![CircleCI](https://circleci.com/gh/rcsoccersim/rcssserver/tree/master.svg?style=svg)](https://circleci.com/gh/rcsoccersim/rcssserver/tree/master)
 ![License](https://img.shields.io/github/license/rcsoccersim/rcssserver.svg)
@@ -37,7 +37,7 @@ to run the AppImage:
 ./rcssserver-x86_64-?.?.?.AppImage
 ```
 
-## :soccer: Build From Source
+## :wrench: Build From Source
 
 rcssserver is implemented by C++14 and depends some libraries.
 Make sure you have the required dependencies installed on your system:
