@@ -632,6 +632,9 @@ private:
     double M_land_dist_noise_rate;
     double M_land_focus_dist_noise_rate;
 
+    // Foxsy
+    std::string M_hetero_path;
+
 private:
 
     // setters & getters
@@ -995,6 +998,9 @@ public:
     double focusDistNoiseRate() const { return M_focus_dist_noise_rate; }
     double landDistNoiseRate() const { return M_land_dist_noise_rate; }
     double landFocusDistNoiseRate() const { return M_land_focus_dist_noise_rate; }
+
+    // Foxsy
+    std::string heteroPath() const { return M_hetero_path; }
 };
 
 #endif

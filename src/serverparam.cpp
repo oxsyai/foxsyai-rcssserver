@@ -383,6 +383,10 @@ constexpr double DIST_NOISE_RATE = 0.0125;
 constexpr double FOCUS_DIST_NOISE_RATE = 0.0125;
 constexpr double LAND_DIST_NOISE_RATE = 0.00125;
 constexpr double LAND_FOCUS_DIST_NOISE_RATE = 0.00125;
+
+// Foxsy
+const std::string S_HETEROPATH = "";
+
 }
 
 // XXX
@@ -958,6 +962,9 @@ ServerParam::addParams()
     addParam( "land_dist_noise_rate", M_land_dist_noise_rate, "", 19 );
     addParam( "land_focus_dist_noise_rate", M_land_focus_dist_noise_rate, "", 19 );
 
+    // Foxsy
+    addParam( "hetero_path", M_hetero_path, "", 19 );
+
     // XXX
     // addParam( "random_seed", M_random_seed, "", 999 );
     // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
@@ -1479,6 +1486,9 @@ ServerParam::setDefaults()
     M_focus_dist_noise_rate = FOCUS_DIST_NOISE_RATE;
     M_land_dist_noise_rate = LAND_DIST_NOISE_RATE;
     M_land_focus_dist_noise_rate = LAND_FOCUS_DIST_NOISE_RATE;
+
+    // Foxsy
+    M_hetero_path = S_HETEROPATH;
 //     std::string module_dir = S_MODULE_DIR;
 //     for ( std::string::size_type pos = module_dir.find( "//" );
 //           pos != std::string::npos;
