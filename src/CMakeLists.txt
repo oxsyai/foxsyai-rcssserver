@@ -96,6 +96,7 @@ target_link_libraries(RCSSServer
     RCSS::Net
     RCSS::GZ
     ZLIB::ZLIB
+    nlohmann_json::nlohmann_json
 	)
 
 target_compile_definitions(RCSSServer

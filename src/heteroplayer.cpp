@@ -35,12 +35,17 @@
 
 #include "heteroplayer.h"
 
+std::vector<HeteroPlayer> HeteroPlayer::foxsy_hetero_players;
+
 #include "serverparam.h"
 #include "playerparam.h"
 #include "utility.h"
 
 #include <iomanip>
 #include <random>
+#include <fstream>
+#include <nlohmann/json.hpp>
+
 
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h> /* needed for htonl, htons, ... */
@@ -48,6 +53,222 @@
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h> /* needed for htonl, htons, ... */
 #endif
+
+void HeteroPlayer::createFoxsyHeteroPlayers(std::string file_path)
+{
+    if (HeteroPlayer::foxsy_hetero_players.size() > 0)
+    {
+        std::cout << "Foxsy Hetero Players already created." << std::endl;
+        return;
+    }
+
+    for (int i = 0; i < PlayerParam::instance().playerTypes(); i++)
+    {
+        HeteroPlayer::foxsy_hetero_players.push_back(HeteroPlayer());
+    }
+
+    /*
+        file in file_path is a json file with the following format:
+        {
+            "0":{
+                "player_speed_max": 1,
+                "stamina_inc_max": 1,
+                "player_decay": 1,
+                "inertia_moment": 1,
+                "dash_power_rate": 1,
+                "player_size": 1,
+                "kickable_margin": 1,
+                "kick_rand": 1,
+                "extra_stamina": 1,
+                "effort_max": 1,
+                "effort_min": 1,
+                "kick_power_rate": 1,
+                "foul_detect_probability": 1,
+                "catchable_area_l_stretch": 1,
+                "unum_far_length": 1,
+                "unum_too_far_length": 1,
+                "team_far_length": 1,
+                "team_too_far_length": 1,
+                "player_max_observation_length": 1,
+                "ball_vel_far_length": 1,
+                "ball_vel_too_far_length": 1,
+                "ball_max_observation_length": 1,
+                "land_vel_far_length": 1,
+                "land_vel_too_far_length": 1,
+                "flag_max_observation_length": 1,
+                "dist_noise_rate": 1,
+                "focus_dist_noise_rate": 1,
+                "land_dist_noise_rate": 1,
+                "land_focus_dist_noise_rate": 1,
+            },
+            "1":{
+                ...
+            },
+            .
+            .
+            .
+        }
+        Some of the field can be exist or not also some other fields can be exist.
+    */
+
+    std::ifstream file(file_path);
+    if (!file.is_open())
+    {
+        std::cerr << "Error opening file: " << file_path << std::endl;
+        return;
+    }
+
+    nlohmann::json j;
+    file >> j;
+
+    for (int i = 0; i < PlayerParam::instance().playerTypes(); i++)
+    {
+        std::cout << "Creating Foxsy Hetero Player " << i << std::endl;
+        for (nlohmann::json::iterator it = j[std::to_string(i)].begin(); it != j[std::to_string(i)].end(); ++it)
+        {
+            std::cout << "\t" << it.key() << " : " << it.value() << std::endl;
+            if (it.value().is_number())
+            {
+                HeteroPlayer::foxsy_hetero_players[i].setParam(it.key(), it.value().get<double>());
+            }
+            else if (it.value().is_string())
+            {
+                HeteroPlayer::foxsy_hetero_players[i].setParam(it.key(), it.value().get<std::string>());
+            }
+        }
+    }
+}
+
+void HeteroPlayer::setParam(std::string name, std::variant<double, std::string> value)
+{
+    if (name == "player_speed_max")
+    {
+        M_player_speed_max = std::get<double>(value);
+    }
+    else if (name == "stamina_inc_max")
+    {
+        M_stamina_inc_max = std::get<double>(value);
+    }
+    else if (name == "player_decay")
+    {
+        M_player_decay = std::get<double>(value);
+    }
+    else if (name == "inertia_moment")
+    {
+        M_inertia_moment = std::get<double>(value);
+    }
+    else if (name == "dash_power_rate")
+    {
+        M_dash_power_rate = std::get<double>(value);
+    }
+    else if (name == "player_size")
+    {
+        M_player_size = std::get<double>(value);
+    }
+    else if (name == "kickable_margin")
+    {
+        M_kickable_margin = std::get<double>(value);
+    }
+    else if (name == "kick_rand")
+    {
+        M_kick_rand = std::get<double>(value);
+    }
+    else if (name == "extra_stamina")
+    {
+        M_extra_stamina = std::get<double>(value);
+    }
+    else if (name == "effort_max")
+    {
+        M_effort_max = std::get<double>(value);
+    }
+    else if (name == "effort_min")
+    {
+        M_effort_min = std::get<double>(value);
+    }
+    else if (name == "kick_power_rate")
+    {
+        M_kick_power_rate = std::get<double>(value);
+    }
+    else if (name == "foul_detect_probability")
+    {
+        M_foul_detect_probability = std::get<double>(value);
+    }
+    else if (name == "catchable_area_l_stretch")
+    {
+        M_catchable_area_l_stretch = std::get<double>(value);
+    }
+    else if (name == "unum_far_length")
+    {
+        M_unum_far_length = std::get<double>(value);
+    }
+    else if (name == "unum_too_far_length")
+    {
+        M_unum_too_far_length = std::get<double>(value);
+    }
+    else if (name == "team_far_length")
+    {
+        M_team_far_length = std::get<double>(value);
+    }
+    else if (name == "team_too_far_length")
+    {
+        M_team_too_far_length = std::get<double>(value);
+    }
+    else if (name == "player_max_observation_length")
+    {
+        M_player_max_observation_length = std::get<double>(value);
+    }
+    else if (name == "ball_vel_far_length")
+    {
+        M_ball_vel_far_length = std::get<double>(value);
+    }
+    else if (name == "ball_vel_too_far_length")
+    {
+        M_ball_vel_too_far_length = std::get<double>(value);
+    }
+    else if (name == "ball_max_observation_length")
+    {
+        M_ball_max_observation_length = std::get<double>(value);
+    }
+    else if (name == "land_vel_far_length")
+    {
+        M_land_vel_far_length = std::get<double>(value);
+    }
+    else if (name == "land_vel_too_far_length")
+    {
+        M_land_vel_too_far_length = std::get<double>(value);
+    }
+    else if (name == "flag_max_observation_length")
+    {
+        M_flag_max_observation_length = std::get<double>(value);
+    }
+    else if (name == "dist_noise_rate")
+    {
+        M_dist_noise_rate = std::get<double>(value);
+    }
+    else if (name == "focus_dist_noise_rate")
+    {
+        M_focus_dist_noise_rate = std::get<double>(value);
+    }
+    else if (name == "land_dist_noise_rate")
+    {
+        M_land_dist_noise_rate = std::get<double>(value);
+    }
+    else if (name == "land_focus_dist_noise_rate")
+    {
+        M_land_focus_dist_noise_rate = std::get<double>(value);
+    }
+    else
+    {
+        if (std::holds_alternative<double>(value))
+        {
+            M_other_params[name] = std::to_string(std::get<double>(value));
+        }
+        else if (std::holds_alternative<std::string>(value))
+        {
+            M_other_params[name] = std::get<std::string>(value);
+        }
+    }
+}
 
 HeteroPlayer::HeteroPlayer()
 {
@@ -413,6 +634,11 @@ HeteroPlayer::printParamsSExp( std::ostream & o,
     to_sexp( o, "focus_dist_noise_rate", focusDistNoiseRate() );
     to_sexp( o, "land_dist_noise_rate", landDistNoiseRate() );
     to_sexp( o, "land_focus_dist_noise_rate", landFocusDistNoiseRate() );
+
+    for (const auto& param : M_other_params)
+    {
+        to_sexp(o, param.first, param.second);
+    }
 }
 
 
@@ -486,5 +712,11 @@ HeteroPlayer::printParamsJSON( std::ostream & o,
         to_json_member( o, "land_dist_noise_rate", landDistNoiseRate() );
         o << ",";
         to_json_member( o, "land_focus_dist_noise_rate", landFocusDistNoiseRate() );
+
+        for (const auto& param : M_other_params)
+        {
+            o << ",";
+            to_json_member(o, param.first, param.second);
+        }
     }
 }

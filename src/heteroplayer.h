@@ -35,6 +35,11 @@
 #include "types.h"
 
 #include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+#include <variant>
+using std::map;
 
 class HeteroPlayer {
 public:
@@ -128,7 +133,15 @@ private:
     double M_focus_dist_noise_rate;
     double M_land_dist_noise_rate;
     double M_land_focus_dist_noise_rate;
-};
+
+    std::map<std::string, std::string> M_other_params;
+public:
+    void setParam(std::string name, std::variant<double, std::string> value);
+
+    static std::vector<HeteroPlayer> foxsy_hetero_players;
+
+    static void createFoxsyHeteroPlayers(std::string file_path);
+};;
 
 inline
 std::ostream &

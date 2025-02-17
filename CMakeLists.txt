@@ -36,5 +36,10 @@ check_include_file_cxx("pwd.h" HAVE_PWD_H)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake config.h)
 
+# Foxsy json reader
+include(FetchContent)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
+FetchContent_MakeAvailable(json)
+
 add_subdirectory(rcss)
 add_subdirectory(src)

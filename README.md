@@ -220,3 +220,93 @@ For bug reports, feature requests and latest updates, please goto
 https://github.com/rcsoccersim/rcssserver and open an issue or a pull request.
 
 > The RoboCup Soccer Server Maintainance Group
+
+
+## Updates for Foxsy
+
+### Player types in log files
+
+```bash
+(player_type (id 0)(player_speed_max 1)(stamina_inc_max 1)(player_decay 1)(inertia_moment 1)(dash_power_rate 1)(player_size 1)(kickable_margin 1)(kick_rand 1)(extra_stamina 1)(effort_max 1)(effort_min 1)(kick_power_rate 1)(foul_detect_probability 1)(catchable_area_l_stretch 1)(unum_far_length 1)(unum_too_far_length 1)(team_far_length 1)(team_too_far_length 1)(player_max_observation_length 1)(ball_vel_far_length 1)(ball_vel_too_far_length 1)(ball_max_observation_length 1)(flag_chg_far_length 1)(flag_chg_too_far_length 1)(flag_max_observation_length 1)(dist_noise_rate 1)(focus_dist_noise_rate 1)(land_dist_noise_rate 1)(land_focus_dist_noise_rate 1)(name nader)(t-number 15.000000))
+(player_type (id 1)(player_speed_max 2)(stamina_inc_max 2)(player_decay 2)(inertia_moment 2)(dash_power_rate 2)(player_size 2)(kickable_margin 2)(kick_rand 2)(extra_stamina 2)(effort_max 2)(effort_min 2)(kick_power_rate 2)(foul_detect_probability 2)(catchable_area_l_stretch 2)(unum_far_length 2)(unum_too_far_length 2)(team_far_length 2)(team_too_far_length 2)(player_max_observation_length 2)(ball_vel_far_length 2)(ball_vel_too_far_length 2)(ball_max_observation_length 2)(flag_chg_far_length 2)(flag_chg_too_far_length 2)(flag_max_observation_length 2)(dist_noise_rate 2)(focus_dist_noise_rate 2)(land_dist_noise_rate 2)(land_focus_dist_noise_rate 2)(name ronaldo)(t-number 7.000000))
+(player_type (id 2)(player_speed_max 1.05)(stamina_inc_max 47.075)(player_decay 0.337566)(inertia_moment 3.43916)(dash_power_rate 0.00565417)(player_size 0.3)(kickable_margin 0.793198)(kick_rand 0.193198)(extra_stamina 70.6056)(effort_max 0.917578)(effort_min 0.517578)(kick_power_rate 0.027)(foul_detect_probability 0.5)(catchable_area_l_stretch 1.18533)(unum_far_length 20)(unum_too_far_length 40)(team_far_length 125.096)(team_too_far_length 125.096)(player_max_observation_length 125.096)(ball_vel_far_length 20)(ball_vel_too_far_length 40)(ball_max_observation_length 125.096)(flag_chg_far_length 20)(flag_chg_too_far_length 40)(flag_max_observation_length 125.096)(dist_noise_rate 0.0125)(focus_dist_noise_rate 0.0125)(land_dist_noise_rate 0.00125)(land_focus_dist_noise_rate 0.00125))
+```
+
+The server can receive a file path as an argument to the set player types.
+
+```bash
+./rcssserver --server::hetero_path=/home/nader/workspace/foxsy/foxsyai-rcssserver/hetero.json
+```
+
+The json will be looklike this:
+
+```json
+{
+    "0":{
+        "player_speed_max": 1,
+        "stamina_inc_max": 1,
+        "player_decay": 1,
+        "inertia_moment": 1,
+        "dash_power_rate": 1,
+        "player_size": 1,
+        "kickable_margin": 1,
+        "kick_rand": 1,
+        "extra_stamina": 1,
+        "effort_max": 1,
+        "effort_min": 1,
+        "kick_power_rate": 1,
+        "foul_detect_probability": 1,
+        "catchable_area_l_stretch": 1,
+        "unum_far_length": 1,
+        "unum_too_far_length": 1,
+        "team_far_length": 1,
+        "team_too_far_length": 1,
+        "player_max_observation_length": 1,
+        "ball_vel_far_length": 1,
+        "ball_vel_too_far_length": 1,
+        "ball_max_observation_length": 1,
+        "land_vel_far_length": 1,
+        "land_vel_too_far_length": 1,
+        "flag_max_observation_length": 1,
+        "dist_noise_rate": 1,
+        "focus_dist_noise_rate": 1,
+        "land_dist_noise_rate": 1,
+        "land_focus_dist_noise_rate": 1,
+        "name": "nader",
+        "t-number": 15
+    },
+    "1":{
+        "player_speed_max": 2,
+        "stamina_inc_max": 2,
+        "player_decay": 2,
+        "inertia_moment": 2,
+        "dash_power_rate": 2,
+        "player_size": 2,
+        "kickable_margin": 2,
+        "kick_rand": 2,
+        "extra_stamina": 2,
+        "effort_max": 2,
+        "effort_min": 2,
+        "kick_power_rate": 2,
+        "foul_detect_probability": 2,
+        "catchable_area_l_stretch": 2,
+        "unum_far_length": 2,
+        "unum_too_far_length": 2,
+        "team_far_length": 2,
+        "team_too_far_length": 2,
+        "player_max_observation_length": 2,
+        "ball_vel_far_length": 2,
+        "ball_vel_too_far_length": 2,
+        "ball_max_observation_length": 2,
+        "land_vel_far_length": 2,
+        "land_vel_too_far_length": 2,
+        "flag_max_observation_length": 2,
+        "dist_noise_rate": 2,
+        "focus_dist_noise_rate": 2,
+        "land_dist_noise_rate": 2,
+        "land_focus_dist_noise_rate": 2,
+        "name": "ronaldo",
+        "t-number": 7
+    }
+}
+```

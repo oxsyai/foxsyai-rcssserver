@@ -243,12 +243,24 @@ Stadium::init()
         delete reader;
     }
 
-    M_player_types.push_back( new HeteroPlayer( 0 ) );
-    //std::cout << *(M_player_types[ 0 ]) << std::endl;
-    for ( int i = 1; i < PlayerParam::instance().playerTypes(); i++ )
+    auto hetero_path = ServerParam::instance().heteroPath();
+    if ( ! hetero_path.empty() )
     {
-        M_player_types.push_back( new HeteroPlayer() );
-        //std::cout << *(M_player_types[i]) << std::endl;
+        HeteroPlayer::createFoxsyHeteroPlayers( hetero_path );
+        for ( auto & player : HeteroPlayer::foxsy_hetero_players )
+        {
+            M_player_types.push_back( &player );
+        }
+    }
+    else
+    {
+        M_player_types.push_back( new HeteroPlayer( 0 ) );
+        //std::cout << *(M_player_types[ 0 ]) << std::endl;
+        for ( int i = 1; i < PlayerParam::instance().playerTypes(); i++ )
+        {
+            M_player_types.push_back( new HeteroPlayer() );
+            //std::cout << *(M_player_types[i]) << std::endl;
+        }
     }
 
     if ( ! M_player_socket.bind( rcss::net::Addr( ServerParam::instance().playerPort() )  ) )

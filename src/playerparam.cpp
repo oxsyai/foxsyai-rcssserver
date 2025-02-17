@@ -89,7 +89,7 @@ const std::string PlayerParam::PLAYER_CONF = "player.conf";
 const std::string PlayerParam::OLD_PLAYER_CONF = "~/.rcssserver-player.conf";
 #endif
 
-const int PlayerParam::DEFAULT_PLAYER_TYPES = 18; // [12.0.0] 7 -> 18
+const int PlayerParam::DEFAULT_PLAYER_TYPES = 36; // [12.0.0] 7 -> 18 -> Foxsy 36
 const int PlayerParam::DEFAULT_SUBS_MAX = 3;
 const int PlayerParam::DEFAULT_PT_MAX = 1; // [12.0.0] 3 -> 1
 
