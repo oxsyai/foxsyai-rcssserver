@@ -1,0 +1,114 @@
+{
+    "0":{
+        "kickable_margin": 3,
+        "name": "nader",
+        "t-number": 15
+    },
+    "1":{
+        "kickable_margin": 3,
+        "name": "ronaldo",
+        "t-number": 7
+    },
+    "2":{
+        "kickable_margin": 3
+    },
+    "3":{
+        "kickable_margin": 3
+    },
+    "4":{
+        "kickable_margin": 3
+    },
+    "5":{
+        "kickable_margin": 3
+    },
+    "6":{
+        "kickable_margin": 3
+    },
+    "7":{
+        "kickable_margin": 3
+    },
+    "8":{
+        "kickable_margin": 3
+    },
+    "9":{
+        "kickable_margin": 3
+    },
+    "10":{
+        "kickable_margin": 3
+    },
+    "11":{
+        "kickable_margin": 3
+    },
+    "12":{
+        "kickable_margin": 3
+    },
+    "13":{
+        "kickable_margin": 3
+    },
+    "14":{
+        "kickable_margin": 3
+    },
+    "15":{
+        "kickable_margin": 3
+    },
+    "16":{
+        "kickable_margin": 3
+    },
+    "17":{
+        "kickable_margin": 3
+    },
+    "18":{
+        "kickable_margin": 1
+    },
+    "19":{
+        "kickable_margin": 1
+    },
+    "20":{
+        "kickable_margin": 1
+    },
+    "21":{
+        "kickable_margin": 1
+    },
+    "22":{
+        "kickable_margin": 1
+    },
+    "23":{
+        "kickable_margin": 1
+    },
+    "24":{
+        "kickable_margin": 1
+    },
+    "25":{
+        "kickable_margin": 1
+    },
+    "26":{
+        "kickable_margin": 1
+    },
+    "27":{
+        "kickable_margin": 1
+    },
+    "28":{
+        "kickable_margin": 1
+    },
+    "29":{
+        "kickable_margin": 1
+    },
+    "30":{
+        "kickable_margin": 1
+    },
+    "31":{
+        "kickable_margin": 1
+    },
+    "32":{
+        "kickable_margin": 1
+    },
+    "33":{
+        "kickable_margin": 1
+    },
+    "34":{
+        "kickable_margin": 4
+    },
+    "35":{
+        "kickable_margin": 1
+    }
+}
