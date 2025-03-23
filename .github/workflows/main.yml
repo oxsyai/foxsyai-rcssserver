@@ -14,62 +14,6 @@ env:
   BASE_TAG: latest
 
 jobs:
-  docker:
-    runs-on: ubuntu-latest
-    name: Build & Push Docker
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
-      - name: Find CMakeLists.txt version
-        id: cmake_version
-        run: |
-          cmake_version=$(grep -oP 'project\(.* VERSION \K[0-9]+\.[0-9]+\.[0-9]+' CMakeLists.txt)
-          echo "::set-output name=version::${cmake_version}"
-        
-      - name: Check if the version tag exist git then skip
-        id: check_tag
-        run: |
-          git tag -l | grep -q "${{ steps.cmake_version.outputs.version }}" && echo "Tag already exists" && exit 1 || echo "Tag does not exist"
-        continue-on-error: true
-      
-      - name: tag the version
-        if: steps.check_tag.outcome == 'success'
-        run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-          git tag -a "${{ steps.cmake_version.outputs.version }}" -m "Version ${{ steps.cmake_version.outputs.version }}"
-          git push origin "${{ steps.cmake_version.outputs.version }}"
-      
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push RCSSServer
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./utils/docker/Dockerfile
-          push: true
-          tags: "${{ env.BASE_IMAGE }}:latest,${{ env.BASE_IMAGE }}:ubuntu-24-${{ steps.cmake_version.outputs.version }}"
-
-      - name: Docker Hub Description
-        uses: peter-evans/dockerhub-description@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ env.BASE_IMAGE }}
-          readme-filepath: utils/docker/README.md
-          short-description: "RoboCup Soccer Simulator Server"
-
   app-image:
     runs-on: ubuntu-latest
     name: Build AppImage
