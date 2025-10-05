@@ -1,114 +1,182 @@
 {
     "0":{
-        "kickable_margin": 3,
-        "name": "nader",
-        "t-number": 15
+        "kickable_margin": 1,
+        "name": "L0",
+        "t-number": 10
     },
     "1":{
-        "kickable_margin": 3,
-        "name": "ronaldo",
-        "t-number": 7
+        "kickable_margin": 1,
+        "name": "L1",
+        "t-number": 11
     },
     "2":{
-        "kickable_margin": 3
+        "kickable_margin": 1,
+        "name": "L2",
+        "t-number": 12
     },
     "3":{
-        "kickable_margin": 3
+        "kickable_margin": 3,
+        "name": "L3",
+        "t-number": 13
     },
     "4":{
-        "kickable_margin": 3
+        "kickable_margin": 0.3,
+        "name": "L4",
+        "t-number": 14
     },
     "5":{
-        "kickable_margin": 3
+        "kickable_margin": 3,
+        "name": "L5",
+        "t-number": 15
     },
     "6":{
-        "kickable_margin": 3
+        "kickable_margin": 3,
+        "name": "L6",
+        "t-number": 16
     },
     "7":{
-        "kickable_margin": 3
+        "kickable_margin": 4,
+        "name": "L7",
+        "t-number": 17
     },
     "8":{
-        "kickable_margin": 3
+        "kickable_margin": 4,
+        "name": "L8",
+        "t-number": 18
     },
     "9":{
-        "kickable_margin": 3
+        "kickable_margin": 4,
+        "name": "L9",
+        "t-number": 19
     },
     "10":{
-        "kickable_margin": 3
+        "kickable_margin": 4,
+        "name": "L10",
+        "t-number": 20
     },
     "11":{
-        "kickable_margin": 3
+        "kickable_margin": 3,
+        "name": "L11",
+        "t-number": 21
     },
     "12":{
-        "kickable_margin": 3
+        "kickable_margin": 3,
+        "name": "L12",
+        "t-number": 22
     },
     "13":{
-        "kickable_margin": 3
+        "kickable_margin": 2.5,
+        "name": "L13",
+        "t-number": 23
     },
     "14":{
-        "kickable_margin": 3
+        "kickable_margin": 2.5,
+        "name": "L14",
+        "t-number": 24
     },
     "15":{
-        "kickable_margin": 3
+        "kickable_margin": 2.5,
+        "name": "L15",
+        "t-number": 25
     },
     "16":{
-        "kickable_margin": 3
+        "kickable_margin": 3,
+        "name": "L16",
+        "t-number": 26
     },
     "17":{
-        "kickable_margin": 3
+        "kickable_margin": 3,
+        "name": "L17",
+        "t-number": 27
     },
     "18":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R0",
+        "t-number": 0
     },
     "19":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R1",
+        "t-number": 1
     },
     "20":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R2",
+        "t-number": 2
     },
     "21":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R3",
+        "t-number": 3
     },
     "22":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R4",
+        "t-number": 4
     },
     "23":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R5",
+        "t-number": 5
     },
     "24":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R6",
+        "t-number": 6
     },
     "25":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R7",
+        "t-number": 7
     },
     "26":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R8",
+        "t-number": 8
     },
     "27":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R9",
+        "t-number": 9
     },
     "28":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R10",
+        "t-number": 10
     },
     "29":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R11",
+        "t-number": 11
     },
     "30":{
-        "kickable_margin": 1
+        "kickable_margin": 3,
+        "name": "R12",
+        "t-number": 12
     },
     "31":{
-        "kickable_margin": 1
+        "kickable_margin": 3,
+        "name": "R13",
+        "t-number": 13
     },
     "32":{
-        "kickable_margin": 1
+        "kickable_margin": 4,
+        "name": "R14",
+        "t-number": 14
     },
     "33":{
-        "kickable_margin": 1
+        "kickable_margin": 4,
+        "name": "R15",
+        "t-number": 15
     },
     "34":{
-        "kickable_margin": 4
+        "kickable_margin": 5,
+        "name": "R16",
+        "t-number": 16
     },
     "35":{
-        "kickable_margin": 1
+        "kickable_margin": 1,
+        "name": "R17",
+        "t-number": 17
     }
 }

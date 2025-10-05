@@ -235,7 +235,7 @@ https://github.com/rcsoccersim/rcssserver and open an issue or a pull request.
 The server can receive a file path as an argument to the set player types.
 
 ```bash
-./rcssserver --server::hetero_path=/home/nader/workspace/foxsy/foxsyai-rcssserver/hetero.json
+./rcssserver --server::hetero_path=PATH/hetero.json
 ```
 
 The json will be looklike this:
@@ -310,3 +310,63 @@ The json will be looklike this:
     }
 }
 ```
+
+### Real Example
+
+#### Run separately
+
+- Run server
+  
+```bash
+./rcssserver --server::hetero_path=../hetero.json
+```
+
+- Run left team
+  
+```bash
+./start.sh -t left -s left -p 6000 -j '{"version":1,"formation_name":"433","player_type_ids":[4,7,8,9,10,13,14,15,0,1,2]}'
+```
+
+- Run right team
+
+```bash
+./start.sh -t right -s right -p 6000 -j '{"version":1,"formation_name":"532","player_type_ids":[35,34,33,32,31,30,29,28,27,26,25]}'
+# or
+./start.sh -t right -s right -p 6000 -j '{"version":1,"formation_name":"532","player_type_ids":[17,16,15,14,13,12,11,10,9,8,7]}'
+```
+
+#### Run toghether
+
+```bash
+# set PATH to your start.sh
+export BinPATH=/home/nader/workspace/foxsy/FoxsyCyrus2DBase/build/bin
+
+./rcssserver --server::hetero_path=../hetero.json --server::team_l_start=\"${BinPATH}/start.sh -t left -s left -p 6000 -e temp -j {@qq@version@qq@:1@c@@qq@formation_name@qq@:@qq@433@qq@@c@@qq@player_type_ids@qq@:[4@c@7@c@8@c@9@c@10@c@13@c@14@c@15@c@0@c@1@c@2]}\" --server::team_r_start=\"${BinPATH}/start.sh -t right -s right -p 6000 -e temp -j {@qq@version@qq@:1@c@@qq@formation_name@qq@:@qq@532@qq@@c@@qq@player_type_ids@qq@:[35@c@34@c@33@c@32@c@31@c@30@c@29@c@28@c@27@c@26@c@25]}\"
+
+#or
+
+./rcssserver --server::hetero_path=../hetero.json --server::team_l_start=\"${BinPATH}/start.sh -t left -s left -p 6000 -e temp -j {@qq@version@qq@:1@c@@qq@formation_name@qq@:@qq@433@qq@@c@@qq@player_type_ids@qq@:[4@c@7@c@8@c@9@c@10@c@13@c@14@c@15@c@0@c@1@c@2]}\" --server::team_r_start=\"${BinPATH}/start.sh -t right -s right -p 6000 -e temp -j {@qq@version@qq@:1@c@@qq@formation_name@qq@:@qq@532@qq@@c@@qq@player_type_ids@qq@:[17@c@16@c@15@c@14@c@13@c@12@c@11@c@10@c@9@c@8@c@7]}\"
+```
+
+Results:
+
+- player names should be `L0` to `L17` and `R0` to `R17` (check in log files)
+- t-shirt numbers should be from `10` to `27` and `0` to `17` (check in log files)
+- left team: (check in monitor)
+  - goalie should be type `4` very small
+  - defenders should be type `7,8,9,10` size 4
+  - midfielders should be type `13,14,15` size 2.5
+  - forwards should be type `0,1,2` size 1
+  - In cout we should see `substituteTo: 1 4`, `substituteTo: 2 7`, ...
+- right team: (check in monitor)
+  - goalie should be type `35`
+  - defenders should be type `34,33,32,31,30` (player 2 should be `34`)
+    - num2 size 5 type 34
+    - num3 size 4 type 33
+    - num4 size 4 type 32
+    - num5 size 3 type 31
+    - num6 size 3 type 30
+  - midfielders should be type `29,28,27`
+  - forwards should be type `26,25`
+    - num11 should be type 25
+  - In cout we should see `substituteTo: 1 35`, `substituteTo: 2 34`, ...
