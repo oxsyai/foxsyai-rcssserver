@@ -247,9 +247,11 @@ Stadium::init()
     if ( ! hetero_path.empty() )
     {
         HeteroPlayer::createFoxsyHeteroPlayers( hetero_path );
+        // foxsy_hetero_players contains stack/contiguous vector elements.
+        // Allocate heap copies so Stadium owns them and can safely delete.
         for ( auto & player : HeteroPlayer::foxsy_hetero_players )
         {
-            M_player_types.push_back( &player );
+            M_player_types.push_back( new HeteroPlayer( player ) );
         }
     }
     else
