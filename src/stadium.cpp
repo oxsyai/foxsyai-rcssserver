@@ -807,108 +807,173 @@ Stadium::step()
     // apply command effects
     // reset command flags
     //
-    for ( PlayerCont::reference p : M_players )
-    {
-        p->applyLegsEffect();
-        p->resetCommandFlags();
-        p->incArmAge();
-    }
-
-    for ( int i = 0; i < 2; ++i )
-    {
-        M_olcoaches[i]->resetCommandFlags();
-        M_olcoaches[i]->check_message_queue( time() );
-        M_olcoaches[i]->update_messages_left( time() );
-    }
-
-    M_coach->resetCommandFlags();
-
-    //
-    // update objects & referees analyze state
-    //
-    if ( playmode() == PM_BeforeKickOff )
-    {
-        turnMovableObjects();
-        ++M_stoppage_time;
-        //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
-        for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
-    }
-    else if ( playmode() == PM_AfterGoal_Right
-              || playmode() == PM_AfterGoal_Left
-              || playmode() == PM_OffSide_Right
-              || playmode() == PM_OffSide_Left
-              || playmode() == PM_Illegal_Defense_Left
-              || playmode() == PM_Illegal_Defense_Right
-              || playmode() == PM_Foul_Charge_Right
-              || playmode() == PM_Foul_Charge_Left
-              || playmode() == PM_Foul_Push_Right
-              || playmode() == PM_Foul_Push_Left
-              || playmode() == PM_Back_Pass_Right
-              || playmode() == PM_Back_Pass_Left
-              || playmode() == PM_Free_Kick_Fault_Right
-              || playmode() == PM_Free_Kick_Fault_Left
-              || playmode() == PM_CatchFault_Right
-              || playmode() == PM_CatchFault_Left )
-    {
-        PlayMode pm = playmode();
-        clearBallCatcher();
-        incMovableObjects();
-        ++M_stoppage_time;
-        //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
-        for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
-        if ( pm != playmode() )
+    try {
+        for ( PlayerCont::reference p : M_players )
         {
-            ++M_time;
-            M_stoppage_time = 0;
+            p->applyLegsEffect();
+            p->resetCommandFlags();
+            p->incArmAge();
         }
     }
-    else if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
+    catch ( std::exception & e )
     {
-        incMovableObjects();
-        ++M_time;
-        M_stoppage_time = 0;
-        //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
-        //for_each( M_referees.begin(), M_referees.end(), std::mem_fun( &Referee::analyse ) );
-        for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
-    }
-    else if ( playmode() == PM_TimeOver )
-    {
-        ++M_stoppage_time;
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << std::endl;
+        throw;
     }
 
-    //
-    // update stamina etc
-    //
-    for ( PlayerCont::reference p : M_players )
-    {
-        if ( ! p->isEnabled() ) continue;
+    try {
+        for ( int i = 0; i < 2; ++i )
+        {
+            M_olcoaches[i]->resetCommandFlags();
+            M_olcoaches[i]->check_message_queue( time() );
+            M_olcoaches[i]->update_messages_left( time() );
+        }
 
-        p->updateStamina();
-        p->updateCapacity();
+        M_coach->resetCommandFlags();
+    }
+    catch ( std::exception & e )
+    {
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << std::endl;
+        throw;
+    }
+    
+
+    try {
+        //
+        // update objects & referees analyze state
+        //
+        if ( playmode() == PM_BeforeKickOff )
+        {
+            turnMovableObjects();
+            ++M_stoppage_time;
+            //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+            for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
+        }
+        else if ( playmode() == PM_AfterGoal_Right
+                || playmode() == PM_AfterGoal_Left
+                || playmode() == PM_OffSide_Right
+                || playmode() == PM_OffSide_Left
+                || playmode() == PM_Illegal_Defense_Left
+                || playmode() == PM_Illegal_Defense_Right
+                || playmode() == PM_Foul_Charge_Right
+                || playmode() == PM_Foul_Charge_Left
+                || playmode() == PM_Foul_Push_Right
+                || playmode() == PM_Foul_Push_Left
+                || playmode() == PM_Back_Pass_Right
+                || playmode() == PM_Back_Pass_Left
+                || playmode() == PM_Free_Kick_Fault_Right
+                || playmode() == PM_Free_Kick_Fault_Left
+                || playmode() == PM_CatchFault_Right
+                || playmode() == PM_CatchFault_Left )
+        {
+            PlayMode pm = playmode();
+            clearBallCatcher();
+            incMovableObjects();
+            ++M_stoppage_time;
+            //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+            for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
+            if ( pm != playmode() )
+            {
+                ++M_time;
+                M_stoppage_time = 0;
+            }
+        }
+        else if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
+        {
+            incMovableObjects();
+            ++M_time;
+            M_stoppage_time = 0;
+            //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+            //for_each( M_referees.begin(), M_referees.end(), std::mem_fun( &Referee::analyse ) );
+            for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
+        }
+        else if ( playmode() == PM_TimeOver )
+        {
+            ++M_stoppage_time;
+        }
+    }
+    catch ( std::exception & e )
+    {
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << std::endl;
+        throw;
+    }
+    
+    try {
+        //
+        // update stamina etc
+        //
+        for ( PlayerCont::reference p : M_players )
+        {
+            if ( ! p->isEnabled() ) continue;
+
+            p->updateStamina();
+            p->updateCapacity();
+        }
+    }
+    catch ( std::exception & e )
+    {
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << std::endl;
+        throw;
     }
 
-    if ( stoppageTime() == 0
-         && time() > 0
-         && ServerParam::instance().nrNormalHalfs() > 0
-         && time() % ( ServerParam::instance().nrNormalHalfs()
-                       * ServerParam::instance().halfTime() ) == 0 )
+    try {
+        if ( stoppageTime() == 0
+            && time() > 0
+            && ServerParam::instance().nrNormalHalfs() > 0
+            && time() % ( ServerParam::instance().nrNormalHalfs()
+                        * ServerParam::instance().halfTime() ) == 0 )
+        {
+            //every game time cycles, give the online coach more messages
+            M_olcoaches[0]->awardFreeformMessageCount();
+            M_olcoaches[1]->awardFreeformMessageCount();
+        }
+    }
+    catch ( std::exception & e )
     {
-        //every game time cycles, give the online coach more messages
-        M_olcoaches[0]->awardFreeformMessageCount();
-        M_olcoaches[1]->awardFreeformMessageCount();
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << std::endl;
+        throw;
+    }
+    
+
+    try {
+        //
+        // send to monitors and write game log
+        //
+        sendDisp();
+    }
+    catch ( std::exception & e )
+    {
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << std::endl;
+        throw;
     }
 
-    //
-    // send to monitors and write game log
-    //
-    sendDisp();
-
-    //
-    // reset player state
-    //
-    for ( PlayerCont::reference p : M_players )
+    try {
+        //
+        // reset player state
+        //
+        for ( PlayerCont::reference p : M_players )
+        {
+            p->resetState();
+        }
+    }
+    catch ( std::exception & e )
     {
-        p->resetState();
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << std::endl;
+        throw;
     }
 }
 
@@ -953,20 +1018,29 @@ Stadium::incMovableObjects()
 void
 Stadium::sendDisp()
 {
-    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
+    try {
+        const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
-    // send to displays
-    for ( MonitorCont::reference m : M_monitors )
-    {
-        m->sendShow();
+        // send to displays
+        for ( MonitorCont::reference m : M_monitors )
+        {
+            m->sendShow();
+        }
+
+        // record game log
+        Logger::instance().writeGameLog( *this );
+        Logger::instance().flush();
+
+        const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+        Logger::instance().writeProfile( *this, start_time, end_time, "DISP" );
     }
-
-    // record game log
-    Logger::instance().writeGameLog( *this );
-    Logger::instance().flush();
-
-    const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-    Logger::instance().writeProfile( *this, start_time, end_time, "DISP" );
+    catch ( std::exception & e )
+    {
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << std::endl;
+        throw;
+    }
 }
 
 
@@ -2242,25 +2316,33 @@ Stadium::doRecvFromClients()
 void
 Stadium::doNewSimulatorStep()
 {
-    static std::chrono::system_clock::time_point prev_time = std::chrono::system_clock::now();
-    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
+    try {
+        static std::chrono::system_clock::time_point prev_time = std::chrono::system_clock::now();
+        const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
-    // th 6.3.00
-    //  tp_old = tp_new;
-    //  write_times displays nonsense at first call, since tp_old is never
-    //  initialized. Don't want to handle special exception for first call.
-    Logger::instance().writeTimes( *this, prev_time, start_time );
-    prev_time = start_time;
+        // th 6.3.00
+        //  tp_old = tp_new;
+        //  write_times displays nonsense at first call, since tp_old is never
+        //  initialized. Don't want to handle special exception for first call.
+        Logger::instance().writeTimes( *this, prev_time, start_time );
+        prev_time = start_time;
 
-    //
-    // step
-    //
-    step();
-    startTeams();
-    checkAutoMode();
+        //
+        // step
+        //
+        step();
+        startTeams();
+        checkAutoMode();
 
-    const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-    Logger::instance().writeProfile( *this, start_time, end_time, "SIM" );
+        const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+        Logger::instance().writeProfile( *this, start_time, end_time, "SIM" );
+    }
+    catch ( const std::exception & e )
+    {
+        std::cerr << "Exception in Stadium::doNewSimulatorStep: "
+                  << e.what() << std::endl;
+        throw;
+    }
 }
 
 void
@@ -2407,8 +2489,8 @@ bool
 Stadium::doSendThink()
 {
     const char * think_command = "(think)";
-    const double max_msec_waited = 25 * 50;
-    const int max_cycles_missed = 20;
+    const double max_msec_waited = 25 * 50 * 5;
+    const int max_cycles_missed = 50;
 
     static int cycles_missed = 0; //number of cycles where someone missed
 

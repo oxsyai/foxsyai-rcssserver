@@ -24,7 +24,7 @@
 #endif
 
 #include "stdtimer.h"
-
+#include "iostream"
 #include "timeable.h"
 #include "param.h"          // needed for TIMEDELTA
 #include "serverparam.h"    // needed for ServerParam
@@ -74,96 +74,153 @@ StandardTimer::run()
     std::chrono::nanoseconds elapsed( 0 );
     std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
+    std::cout << "StandardTimer started with TIMEDELTA=" << TIMEDELTA << " msec\n";
     while ( getTimeableRef().alive() )
     {
         const std::chrono::nanoseconds elapsed = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now() - start_time );
         const std::chrono::nanoseconds sleep_count = default_delta - elapsed;
         std::this_thread::sleep_for( sleep_count );
 
-        start_time = std::chrono::system_clock::now();
-        lcmt += ( sleep_count.count() < 0
-                  ? elapsed.count() * 0.001 * 0.001
-                  : ( sleep_count.count() + elapsed.count() ) * 0.001 * 0.001 );
+        std::cout << "StandardTimer::run() A" << std::endl;
+        try {
+            start_time = std::chrono::system_clock::now();
+            lcmt += ( sleep_count.count() < 0
+                    ? elapsed.count() * 0.001 * 0.001
+                    : ( sleep_count.count() + elapsed.count() ) * 0.001 * 0.001 );
 
-        if ( lcmt >= ServerParam::instance().simStep() * c_simt )
-        {
-            c_simt = static_cast< int >( std::floor( lcmt / ServerParam::instance().simStep() ) );
-            lcmt = ServerParam::instance().simStep() * c_simt;
-            // the above lines are needed to
-            // prevent short "catch up" cycles if
-            // the current cycle was slow
+            if ( lcmt >= ServerParam::instance().simStep() * c_simt )
+            {
+                c_simt = static_cast< int >( std::floor( lcmt / ServerParam::instance().simStep() ) );
+                lcmt = ServerParam::instance().simStep() * c_simt;
+                // the above lines are needed to
+                // prevent short "catch up" cycles if
+                // the current cycle was slow
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "StandardTimer::run: Exception caught during sleep: "
+                      << e.what() << std::endl;
+            throw;
+        }
+        
+        std::cout << "StandardTimer::run() B" << std::endl;
+        try {
+            // receive messages
+            if ( lcmt >= ServerParam::instance().recvStep() * c_rect )
+            {
+                getTimeableRef().recvFromClients();
+                c_rect = static_cast< int >( std::floor( lcmt / ServerParam::instance().recvStep() ) );
+                if ( q_rect <= c_rect )
+                    c_rect = 1;
+                else
+                    c_rect++;
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "StandardTimer::run: Exception caught during recvFromClients: "
+                      << e.what() << std::endl;
+            throw;
+        }
+        
+        std::cout << "StandardTimer::run() C" << std::endl;
+        try {
+            // update after new simulation step
+            if ( lcmt >= ServerParam::instance().simStep() * c_simt )
+            {
+                getTimeableRef().newSimulatorStep();
+                if ( q_simt <= c_simt )
+                    c_simt = 1;
+                else
+                    c_simt++;
+                sent_synch_see = false;
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "StandardTimer::run: Exception caught during newSimulatorStep: "
+                      << e.what() << std::endl;
+            throw;
         }
 
-        // receive messages
-        if ( lcmt >= ServerParam::instance().recvStep() * c_rect )
-        {
-            getTimeableRef().recvFromClients();
-            c_rect = static_cast< int >( std::floor( lcmt / ServerParam::instance().recvStep() ) );
-            if ( q_rect <= c_rect )
-                c_rect = 1;
-            else
-                c_rect++;
+        std::cout << "StandardTimer::run() D" << std::endl;
+        try {
+            // send sense body
+            if ( lcmt >= ServerParam::instance().senseBodyStep() * c_sbt )
+            {
+                getTimeableRef().sendSenseBody();
+                c_sbt = static_cast< int >( std::floor( lcmt / ServerParam::instance().senseBodyStep() ) );
+                if ( q_sbt <= c_sbt )
+                    c_sbt = 1;
+                else
+                    c_sbt++;
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "StandardTimer::run: Exception caught during sendSenseBody: "
+                      << e.what() << std::endl;
+            throw;
         }
 
-        // update after new simulation step
-        if ( lcmt >= ServerParam::instance().simStep() * c_simt )
-        {
-            getTimeableRef().newSimulatorStep();
-            if ( q_simt <= c_simt )
-                c_simt = 1;
-            else
-                c_simt++;
-            sent_synch_see = false;
+        std::cout << "StandardTimer::run() E" << std::endl;
+        try {
+            // send visual messages
+            if ( lcmt >= ( ServerParam::instance().sendStep() * 0.25 ) * c_sent )
+            {
+                getTimeableRef().sendVisuals();
+                c_sent = static_cast< int >( std::floor( lcmt/(ServerParam::instance().sendStep() * 0.25 ) ) );
+                if ( q_sent <= c_sent )
+                    c_sent = 1;
+                else
+                    c_sent++;
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "StandardTimer::run: Exception caught during sendVisuals: "
+                      << e.what() << std::endl;
+            throw;
         }
 
-        // send sense body
-        if ( lcmt >= ServerParam::instance().senseBodyStep() * c_sbt )
-        {
-            getTimeableRef().sendSenseBody();
-            c_sbt = static_cast< int >( std::floor( lcmt / ServerParam::instance().senseBodyStep() ) );
-            if ( q_sbt <= c_sbt )
-                c_sbt = 1;
-            else
-                c_sbt++;
+        std::cout << "StandardTimer::run() F" << std::endl;
+        try {
+            // send synch visual message
+            if ( ! sent_synch_see
+                && lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
+                            + ServerParam::instance().synchSeeOffset() ) )
+            {
+                //std::cerr << "lcmt=" << lcmt << "  c_synch_see=" << c_synch_see << '\n';
+                getTimeableRef().sendSynchVisuals();
+                ++c_synch_see;
+                sent_synch_see = true;
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "StandardTimer::run: Exception caught during sendSynchVisuals: "
+                      << e.what() << std::endl;
+            throw;
         }
 
-        // send visual messages
-        if ( lcmt >= ( ServerParam::instance().sendStep() * 0.25 ) * c_sent )
-        {
-            getTimeableRef().sendVisuals();
-            c_sent = static_cast< int >( std::floor( lcmt/(ServerParam::instance().sendStep() * 0.25 ) ) );
-            if ( q_sent <= c_sent )
-                c_sent = 1;
-            else
-                c_sent++;
-        }
+        std::cout << "StandardTimer::run() G" << std::endl;
+        try {
+            // send coach look messages
+            if ( lcmt >= ServerParam::instance().coachVisualStep() * c_svt )
+            {
+                getTimeableRef().sendCoachMessages();
+                c_svt = static_cast< int >( std::floor( lcmt / ServerParam::instance().coachVisualStep() ) );
+                if ( q_svt <= c_svt )
+                    c_svt = 1;
+                else
+                    c_svt++;
+            }
 
-        // send synch visual message
-        if ( ! sent_synch_see
-             && lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
-                          + ServerParam::instance().synchSeeOffset() ) )
-        {
-            //std::cerr << "lcmt=" << lcmt << "  c_synch_see=" << c_synch_see << '\n';
-            getTimeableRef().sendSynchVisuals();
-            ++c_synch_see;
-            sent_synch_see = true;
+            if ( lcmt >= ServerParam::instance().lcmStep() )
+            {
+                lcmt = 0;
+                c_synch_see = 1;
+            }
         }
-
-        // send coach look messages
-        if ( lcmt >= ServerParam::instance().coachVisualStep() * c_svt )
-        {
-            getTimeableRef().sendCoachMessages();
-            c_svt = static_cast< int >( std::floor( lcmt / ServerParam::instance().coachVisualStep() ) );
-            if ( q_svt <= c_svt )
-                c_svt = 1;
-            else
-                c_svt++;
-        }
-
-        if ( lcmt >= ServerParam::instance().lcmStep() )
-        {
-            lcmt = 0;
-            c_synch_see = 1;
+        catch ( const std::exception & e ) {
+            std::cerr << "StandardTimer::run: Exception caught during sendCoachMessages: "
+                      << e.what() << std::endl;
+            throw;
         }
     }
 

@@ -24,7 +24,7 @@
 #endif
 
 #include "synctimer.h"
-
+#include "iostream"
 #include "timeable.h"
 #include "serverparam.h"    // needed for ServerParam
 
@@ -52,94 +52,143 @@ SyncTimer::run()
         q_svt  = ServerParam::instance().lcmStep()/ServerParam::instance().coachVisualStep();
     bool sent_synch_see = false;
 
+    std::cout << "SyncTimer started\n";
     while ( getTimeableRef().alive() )
     {
         lcmt += TIMEDELTA;
 
-        // new simulation step
-        if ( lcmt >= ServerParam::instance().simStep() * c_simt )
-        {
-            getTimeableRef().newSimulatorStep();
-            if ( q_simt <= c_simt )
+        std::cout << "SyncTimer::run() A" << std::endl;
+        try {
+            // new simulation step
+            if ( lcmt >= ServerParam::instance().simStep() * c_simt )
             {
-                c_simt = 1;
-            }
-            else
-            {
-                c_simt++;
-            }
-            sent_synch_see = false;
-        }
-
-        // new sense body step
-        if ( lcmt >= ServerParam::instance().senseBodyStep() * c_sbt )
-        {
-            getTimeableRef().sendSenseBody();
-            c_sbt = static_cast< int >( std::floor( lcmt / ServerParam::instance().senseBodyStep() ) );
-            if ( q_sbt <= c_sbt )
-            {
-                c_sbt = 1;
-            }
-            else
-            {
-                c_sbt++;
+                getTimeableRef().newSimulatorStep();
+                if ( q_simt <= c_simt )
+                {
+                    c_simt = 1;
+                }
+                else
+                {
+                    c_simt++;
+                }
+                sent_synch_see = false;
             }
         }
-
-        // send visuals
-        if ( lcmt >= (ServerParam::instance().sendStep() * 0.25 ) * c_sent )
-        {
-            getTimeableRef().sendVisuals();
-            c_sent = static_cast< int >( std::floor( lcmt / (ServerParam::instance().sendStep() * 0.25 ) ) );
-            if ( q_sent <= c_sent )
-            {
-                c_sent = 1;
-            }
-            else
-            {
-                c_sent++;
-            }
+        catch ( const std::exception & e ) {
+            std::cerr << "SyncTimer::run: Exception caught during newSimulatorStep: "
+                      << e.what() << std::endl;
+            throw;
         }
 
-        // send synch visual message
-        if ( ! sent_synch_see
-             && lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
-                          + ServerParam::instance().synchSeeOffset() ) )
-        {
-            getTimeableRef().sendSynchVisuals();
-            ++c_synch_see;
-            sent_synch_see = true;
-        }
-
-        // send coach messages
-        if ( lcmt >= ServerParam::instance().coachVisualStep() * c_svt )
-        {
-            getTimeableRef().sendCoachMessages();
-            c_svt = static_cast< int >( std::floor( lcmt / ServerParam::instance().coachVisualStep() ) );
-            if ( q_svt <= c_svt )
+        std::cout << "SyncTimer::run() B" << std::endl;
+        try {
+            // new sense body step
+            if ( lcmt >= ServerParam::instance().senseBodyStep() * c_sbt )
             {
-                c_svt = 1;
-            }
-            else
-            {
-                c_svt++;
+                getTimeableRef().sendSenseBody();
+                c_sbt = static_cast< int >( std::floor( lcmt / ServerParam::instance().senseBodyStep() ) );
+                if ( q_sbt <= c_sbt )
+                {
+                    c_sbt = 1;
+                }
+                else
+                {
+                    c_sbt++;
+                }
             }
         }
-
-        //we do a c_synch-1 because of the offset
-        if ( lcmt >= ServerParam::instance().simStep() * ( c_synch - 1 ) + ServerParam::instance().synchOffset() )
-        {
-            getTimeableRef().sendThink();
-            /* because of the strange offset nature here,
-               we let the lcmt advancement below handle the resetting to 1 */
-            c_synch++;
+        catch ( const std::exception & e ) {
+            std::cerr << "SyncTimer::run: Exception caught during sendSenseBody: "
+                      << e.what() << std::endl;
+            throw;
         }
 
-        if ( lcmt >= ServerParam::instance().lcmStep() )
-        {
-            lcmt = 0;
-            c_synch = 1;
-            c_synch_see = 1;
+        std::cout << "SyncTimer::run() C" << std::endl;
+        try {
+            // send visuals
+            if ( lcmt >= (ServerParam::instance().sendStep() * 0.25 ) * c_sent )
+            {
+                getTimeableRef().sendVisuals();
+                c_sent = static_cast< int >( std::floor( lcmt / (ServerParam::instance().sendStep() * 0.25 ) ) );
+                if ( q_sent <= c_sent )
+                {
+                    c_sent = 1;
+                }
+                else
+                {
+                    c_sent++;
+                }
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "SyncTimer::run: Exception caught during sendVisuals: "
+                        << e.what() << std::endl;
+            throw;
+        }
+
+        std::cout << "SyncTimer::run() D" << std::endl;
+        try {
+            // send synch visual message
+            if ( ! sent_synch_see
+                && lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
+                            + ServerParam::instance().synchSeeOffset() ) )
+            {
+                getTimeableRef().sendSynchVisuals();
+                ++c_synch_see;
+                sent_synch_see = true;
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "SyncTimer::run: Exception caught during sendSynchVisuals: "
+                      << e.what() << std::endl;
+            throw;
+        }
+
+        std::cout << "SyncTimer::run() E" << std::endl;
+        try {
+            // send coach messages
+            if ( lcmt >= ServerParam::instance().coachVisualStep() * c_svt )
+            {
+                getTimeableRef().sendCoachMessages();
+                c_svt = static_cast< int >( std::floor( lcmt / ServerParam::instance().coachVisualStep() ) );
+                if ( q_svt <= c_svt )
+                {
+                    c_svt = 1;
+                }
+                else
+                {
+                    c_svt++;
+                }
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "SyncTimer::run: Exception caught during sendCoachMessages: "
+                      << e.what() << std::endl;
+            throw;
+        }
+
+        std::cout << "SyncTimer::run() F" << std::endl;
+        try {
+            //we do a c_synch-1 because of the offset
+            if ( lcmt >= ServerParam::instance().simStep() * ( c_synch - 1 ) + ServerParam::instance().synchOffset() )
+            {
+                getTimeableRef().sendThink();
+                /* because of the strange offset nature here,
+                we let the lcmt advancement below handle the resetting to 1 */
+                c_synch++;
+            }
+
+            if ( lcmt >= ServerParam::instance().lcmStep() )
+            {
+                lcmt = 0;
+                c_synch = 1;
+                c_synch_see = 1;
+            }
+        }
+        catch ( const std::exception & e ) {
+            std::cerr << "SyncTimer::run: Exception caught during sendThink: "
+                      << e.what() << std::endl;
+            throw;
         }
     }
 
